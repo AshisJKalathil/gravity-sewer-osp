@@ -1,0 +1,117 @@
+/* present.css - the presentation view. Same dark palette as index.html so the two pages
+   read as one site; larger type and far fewer controls, because this page is shown to a
+   room, not operated by an engineer. The map label and card rules are copied from
+   index.html, since growth_3d.js draws into elements that expect them. */
+:root{
+  --bg:#0d1117; --panel:#111c2f; --panel-2:#16233a; --ink:#e7edf7; --dim:#a9b8d4;
+  --faint:#6f81a3; --line:#22314d; --accent:#38bdf8; --red:#ff2d55; --violet:#c9a3ff;
+  --green:#2ef56b; --magenta:#ff3df5;
+}
+*{box-sizing:border-box}
+html,body{margin:0; height:100%}
+body{background:var(--bg); color:var(--ink); overflow:hidden;
+  font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;
+  display:grid; grid-template-rows:auto 1fr; grid-template-columns:380px 1fr; height:100vh}
+
+/* ---- top bar: title, the three steps, the way out to the full model ---- */
+header{grid-column:1 / -1; display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+  padding:12px 20px; border-bottom:1px solid var(--line); background:var(--panel)}
+header h1{margin:0; font-size:19px; font-weight:650; letter-spacing:-.01em}
+header h1 span{color:var(--faint); font-weight:400}
+.steps{display:flex; gap:6px; margin-left:auto}
+.steps button{display:flex; align-items:center; gap:8px; padding:7px 14px; font:inherit; font-size:14.5px;
+  background:var(--panel-2); color:var(--dim); border:1px solid var(--line); border-radius:99px; cursor:pointer}
+.steps button b{display:inline-grid; place-items:center; width:22px; height:22px; border-radius:50%;
+  background:var(--line); color:var(--ink); font-size:12.5px}
+.steps button[aria-selected="true"]{background:var(--accent); border-color:var(--accent); color:#06131f; font-weight:600}
+.steps button[aria-selected="true"] b{background:#06131f; color:var(--accent)}
+.full{color:var(--accent); font-size:14px; text-decoration:none; white-space:nowrap}
+.full:hover{text-decoration:underline}
+
+/* ---- left panel: the words for the current step ---- */
+aside{background:var(--panel); border-right:1px solid var(--line); padding:22px 22px 18px;
+  overflow-y:auto; display:flex; flex-direction:column; gap:16px}
+aside h2{margin:0; font-size:22px; line-height:1.25; letter-spacing:-.01em}
+aside p{margin:0; color:var(--dim)}
+aside p strong{color:var(--ink)}
+.big{font-size:clamp(28px,3.2vw,40px); font-weight:700; line-height:1; font-variant-numeric:tabular-nums}
+.bigRow{display:flex; gap:14px; flex-wrap:wrap}
+.bigRow > div{flex:1; min-width:96px; overflow:hidden; padding:12px 14px; background:var(--panel-2);
+  border:1px solid var(--line); border-radius:10px}
+.bigRow small{display:block; color:var(--dim); font-size:13px; margin-top:6px; line-height:1.35}
+.ctl{display:flex; flex-direction:column; gap:7px}
+.ctl > label{font-size:13px; color:var(--faint); text-transform:uppercase; letter-spacing:.06em}
+.seg{display:flex; gap:6px; flex-wrap:wrap}
+.seg button{flex:1; padding:9px 10px; font:inherit; font-size:15px; cursor:pointer;
+  background:var(--bg); color:var(--dim); border:1px solid var(--line); border-radius:8px}
+.seg button[aria-pressed="true"]{border-color:var(--accent); color:var(--ink); background:#0f2a40}
+input[type=range]{width:100%; accent-color:var(--green)}
+.next{margin-top:auto; padding:11px 14px; font:inherit; font-size:15.5px; font-weight:600; cursor:pointer;
+  background:var(--accent); color:#06131f; border:0; border-radius:9px}
+.hint{font-size:13.5px; color:var(--faint)}
+.verdict{padding:11px 13px; border-radius:9px; font-size:15px; border:1px solid var(--line); background:var(--panel-2)}
+.verdict.yes{border-color:#2ef56b88; color:#c8ffd9}
+.verdict.no{border-color:#ff2d5588; color:#ffd0da}
+.sensorList{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:4px; font-size:14.5px}
+.sensorList li{display:flex; gap:9px; align-items:center}
+.sensorList .tag{display:inline-grid; place-items:center; min-width:24px; height:22px; border-radius:5px;
+  background:var(--green); color:#04140a; font-weight:700; font-size:13px}
+.chart{width:100%; height:auto; flex:none}
+.chartCap{font-size:13px; color:var(--faint); margin:0 0 -8px}
+.caveat{font-size:12.5px; color:var(--faint); border-top:1px solid var(--line); padding-top:12px}
+
+/* ---- the map ---- */
+main{position:relative; min-height:0}
+#stage{position:absolute; inset:0}
+#stage canvas{display:block; width:100%; height:100%}
+.key{position:absolute; left:14px; bottom:14px; z-index:3; pointer-events:none;
+  display:flex; flex-direction:column; gap:5px; padding:10px 13px; font-size:13.5px; color:var(--dim);
+  background:rgba(13,17,23,.9); border:1px solid var(--line); border-radius:9px}
+.key .k{display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:8px; vertical-align:-1px}
+.key .row[hidden]{display:none}
+.tip{position:absolute; right:14px; top:14px; z-index:3; pointer-events:none; max-width:300px;
+  padding:8px 12px; font-size:13px; color:var(--dim); background:rgba(13,17,23,.85);
+  border:1px solid var(--line); border-radius:8px}
+
+/* growth_3d.js labels and pipe card, as index.html styles them */
+.labels{position:absolute; inset:0; pointer-events:none; overflow:hidden}
+.labels .lbl{position:absolute; transform:translate(-50%,-165%); white-space:nowrap;
+  font-size:11px; font-weight:600; color:#c9a3ff; text-shadow:0 0 4px #0d1117, 0 0 4px #0d1117}
+.labels .lbl.site{color:#7dd8ff; transform:translate(-50%, 42%)}
+.labels .lbl.pump{color:#e3b341; transform:translate(-50%,-230%)}
+.labels .lbl.scn{color:#00d4ff; transform:translate(-50%,-200%)}
+.labels .lbl.spill{color:#ff3df5; font-weight:600; transform:translate(-50%,-210%)}
+.labels .lbl.sensor{color:#04140a; background:#2ef56b; font-weight:700; font-size:12.5px;
+  padding:1px 6px; border-radius:4px; transform:translate(-50%,-140%); box-shadow:0 0 0 2px #0d1117}
+.labels .lbl.pumprate{color:#e3b341; font-weight:600; transform:translate(-50%,160%)}
+.labels .lbl.scale{color:#8b949e; font-weight:500; font-size:10.5px; transform:translate(6px,-50%)}
+.labels .lbl.scale.cap{color:#a9b8d4; transform:translate(6px, 80%)}
+.pipeCard{position:absolute; z-index:5; width:270px; padding:12px 14px 10px;
+  background:#111c2fee; border:1px solid #22314d; border-radius:10px; color:#a9b8d4;
+  font-size:12.5px; box-shadow:0 8px 28px #0008}
+.pipeCard[hidden]{display:none}
+.pipeCard h4{margin:0 22px 2px 0; color:#e7edf7; font-size:14px}
+.pipeCard .sub{color:#6f81a3; margin-bottom:8px}
+.pipeCard .r{display:flex; justify-content:space-between; gap:10px; padding:3px 0; border-top:1px solid #1a2840}
+.pipeCard .r b{color:#e7edf7; font-weight:600; text-align:right}
+.pipeCard .state{display:flex; align-items:center; gap:7px; margin-top:8px; color:#e7edf7}
+.pipeCard .state i{width:10px; height:10px; border-radius:50%; flex:none}
+.pipeCard .note{margin-top:8px; color:#6f81a3; font-size:11px; line-height:1.4}
+.pipeCard .x{position:absolute; top:6px; right:8px; background:none; border:0;
+  color:#6f81a3; font-size:18px; cursor:pointer; line-height:1}
+.pipeCard button.pumpSet{display:none}
+
+/* Narrow screens: the panel goes above the map instead of beside it. */
+@media (max-width: 860px){
+  body{grid-template-columns:minmax(0,1fr); grid-template-rows:auto auto 70vh; overflow-x:hidden; overflow-y:auto; height:auto}
+  header{padding:10px 16px; gap:10px}
+  header h1{font-size:17px}
+  header h1 span{display:block}
+  .steps{margin-left:0; flex-wrap:wrap; width:100%}
+  .steps button{flex:1 1 0; min-width:0; padding:6px 8px; font-size:13px; justify-content:center}
+  aside{border-right:0; border-bottom:1px solid var(--line); padding:18px 16px; min-width:0}
+  .bigRow{gap:8px}
+  .bigRow > div{flex:1 1 0; min-width:0; padding:10px}
+  .key{font-size:12px}
+  .tip{display:none}
+}

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Walkerville: where to put sewer sensors</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<link rel="stylesheet" href="present.css?v=3">
+</head>
+<body>
+<!-- The presentation view of Simulation 2.5: three steps, one idea each. It reads the same
+     published SWMM results as index.html and draws them with the same map; it changes
+     neither. Everything an engineer would want is one click away, in the full model. -->
+<header>
+  <h1>Walkerville sewer <span>· where to put sensors as the suburb grows</span></h1>
+  <nav class="steps" role="tablist">
+    <button role="tab" data-step="1"><b>1</b>The network</button>
+    <button role="tab" data-step="2"><b>2</b>Add new homes</button>
+    <button role="tab" data-step="3"><b>3</b>Where to put sensors</button>
+  </nav>
+  <a class="full" href="index.html">Open the full engineering model →</a>
+</header>
+
+<aside id="panel"></aside>
+
+<main>
+  <div id="stage"></div>
+  <div class="key" id="key">
+    <div class="row" data-k="site"><span class="k" style="background:#7dd8ff"></span>Where the new homes connect</div>
+    <div class="row" data-k="tip"><span class="k" style="background:#ff2d55"></span>Water rises 25 mm or more</div>
+    <div class="row" data-k="rise"><span class="k" style="background:#c9a3ff"></span>Water rises 10 to 25 mm</div>
+    <div class="row" data-k="spill"><span class="k" style="background:#ff3df5"></span>New overflow from a lid</div>
+    <div class="row" data-k="sensor"><span class="k" style="background:#2ef56b"></span>Proposed sensor</div>
+    <div class="row" data-k="mh"><span class="k" style="background:#8b949e"></span>Manhole</div>
+  </div>
+  <div class="tip" id="tip">Drag to turn · right-drag to move · scroll to zoom</div>
+</main>
+
+<script src="data/catchment.js?v=81"></script>
+<script src="data/growth.js?v=81"></script>
+<script src="growth_3d.js?v=81"></script>
+<script src="present.js?v=2"></script>
+<script type="module">
+  Present.init();
+</script>
+</body>
+</html>
