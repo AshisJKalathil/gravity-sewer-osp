@@ -1,6 +1,5 @@
 {
  "version": "sim26",
- "made": "2026-10-16",
  "check": {
   "published_run": "Design wet +150 at MH4449860",
   "largest_difference_mm": 0.0

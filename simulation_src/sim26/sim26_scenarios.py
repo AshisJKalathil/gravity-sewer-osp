@@ -142,7 +142,7 @@ def main():
         res = list(pool.map(sim25_grid._whole_task, tasks))
         print(f"{len(tasks)} SWMM runs in {time.time() - t0:.0f} s", flush=True)
 
-    out = {"version": "sim26", "made": time.strftime("%Y-%m-%d"),
+    out = {"version": "sim26",
            "check": {"published_run": f"Design wet +{CHECK['dwellings']} at MH{CHECK['site']}",
                      "largest_difference_mm": round(worst, 3)},
            "corner": {"outlet_node": sim25.SEGMENT_OUTLET, "pipes": n_pipes,
