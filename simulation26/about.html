@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sim 2.6: assumptions and changes</title>
+<style>
+:root{--bg:#0d1117;--panel:#111c2f;--panel-2:#16233a;--ink:#e7edf7;--dim:#a9b8d4;--faint:#6f81a3;--line:#22314d;--accent:#38bdf8;--green:#2ef56b;--amber:#ffa500;--red:#ff2d55}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:28px 20px 60px}
+a{color:var(--accent)}
+h1{font-size:28px;line-height:1.2;margin:8px 0 6px}
+h2{font-size:21px;margin:38px 0 10px;padding-top:16px;border-top:1px solid var(--line)}
+h3{font-size:17px;margin:22px 0 6px;color:var(--ink)}
+p,li{color:var(--dim)} strong{color:var(--ink)}
+.top{display:flex;gap:16px;flex-wrap:wrap;font-size:14px}
+.lede{font-size:17px}
+table{width:100%;border-collapse:collapse;margin:10px 0 6px;font-size:14px}
+.tbl{overflow-x:auto}
+th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--faint);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+.box{padding:12px 14px;border-radius:10px;background:var(--panel-2);border:1px solid var(--line);margin:12px 0}
+.warn{background:#3d2f1233;border-color:#ffa50066}
+.ok{background:#1f3d2a55;border-color:#2ea04366}
+code{background:var(--panel);padding:1px 5px;border-radius:4px;font-size:13.5px}
+.tag{display:inline-block;font-size:11.5px;padding:1px 7px;border-radius:99px;margin-right:6px;border:1px solid var(--line);color:var(--faint)}
+.tag.new{color:var(--green);border-color:#2ef56b66}.tag.as{color:var(--amber);border-color:#ffa50066}.tag.src{color:var(--accent);border-color:#38bdf866}
+</style>
+</head>
+<body><div class="wrap">
+<div class="top"><a href="index.html">← Back to Sim 2.6</a><a href="../simulation25/present.html">Previous presentation view</a><a href="../simulation25/index.html">Full Sim 2.5 model</a></div>
+
+<h1>Sim 2.6: assumptions and what changed</h1>
+<p class="lede">Sim 2.6 is a new version beside Sim 2.5, not a replacement. It adds four things suggested by the papers we read: growth that is spread out or concentrated, a risk score for each manhole, an alarm rule based on each manhole's own normal level, and the cost of a sensor plan. Nothing in Sim 2.5 was edited: its model, results and pages are read, never changed.</p>
+<div class="box"><strong>Prepared 16 Oct 2026.</strong> Built from public council data. Not yet checked against measured sewer levels, so every number is a guide to where to look first, not a measurement.</div>
+
+<h2>1. What changed from the previous version</h2>
+<div class="tbl"><table>
+<tr><th>Area</th><th>Previous (Sim 2.5 and its presentation view)</th><th>Sim 2.6</th></tr>
+<tr><td>Growth shapes</td><td>New homes added at one manhole at a time</td><td><span class="tag new">new</span>Also <strong>infill</strong> (spread over one corner) and <strong>greenfield</strong> (one new estate), solved in 21 new SWMM runs</td></tr>
+<tr><td>Rain on its own</td><td>Only as a weather setting under growth</td><td><span class="tag new">new</span>A <strong>rain only</strong> scenario, with no new homes, as the industry partner asked</td></tr>
+<tr><td>Storm display</td><td>Showed only rises, so a storm looked calm</td><td><span class="tag new">new</span>Shows manholes <strong>already full</strong> (amber) and <strong>already or newly overflowing</strong></td></tr>
+<tr><td>Sensor goal</td><td>Notice the most new growth</td><td><span class="tag new">new</span>Also <strong>watch risky spots</strong> (severity × likelihood), or both</td></tr>
+<tr><td>When a sensor "notices"</td><td>A fixed rise (10, 25 or 50 mm) or the 150 mm alarm</td><td><span class="tag new">new</span>Also a <strong>per-manhole normal band</strong> (Rosin et al. 2022)</td></tr>
+<tr><td>Cost</td><td>Not modelled</td><td><span class="tag new">new</span><strong>Float switch vs level sensor</strong>, with editable prices and a budget slider; the plan re-optimises live</td></tr>
+<tr><td>Sensor failures</td><td>Sensors assumed never to fail</td><td><span class="tag new">new</span>Also shows coverage if 1 in 4 sensors is down (Do et al. 2023)</td></tr>
+<tr><td>Sensor spacing</td><td>Not shown</td><td><span class="tag new">new</span>Distance from each sensor to the nearest other one</td></tr>
+<tr><td>Point-in-time framing</td><td>Not stated on the presentation page</td><td><span class="tag new">new</span>Stated: the network is assumed unchanged while growth arrives</td></tr>
+<tr><td>Pump stations</td><td>Hidden on the presentation page</td><td><span class="tag new">new</span>Shown in step 1</td></tr>
+<tr><td>Hydraulic model</td><td colspan="2">Unchanged: Sim 2.5's EPA SWMM model, loads, cases and solver, used exactly as published</td></tr>
+</table></div>
+
+<h2>2. Checks run before trusting anything new</h2>
+<div class="box ok">
+<p><strong>Check 1, the solver.</strong> One published Sim 2.5 run (Design wet, +150 homes at manhole 4449860) was solved again on this machine before the new runs. The same 44 manholes rose, with a largest difference of <strong>0.00 mm</strong>. The script stops if this check fails.</p>
+<p><strong>Check 2, the scoring.</strong> Sim 2.6 scores sensor sets with its own code. Applied to Sim 2.5's published sensor order, it reproduces Sim 2.5's published coverage <strong>exactly</strong>, for both the 25 mm rule (24%, 33%, 39%, 47%, 61%, 61% ... worst case) and the 150 mm alarm.</p>
+<p><strong>Check 3, the map.</strong> Distances: a published 64 m pipe measures 64.0 m on the map coordinates used for sensor spacing.</p>
+</div>
+
+<h2>3. Addition 1: infill, greenfield and rain only</h2>
+<p><strong>Why:</strong> The industry partner asked to split growth into infill and greenfield and to test rain on its own. Mikovits et al. (2018) found spread-out development caused more flooding than concentrated development of the same population.</p>
+<h3>How it was run</h3>
+<ul>
+<li><strong>Area:</strong> one corner of Walkerville, the 157 pipes draining to node 583 (Sim 2.5's original 71-manhole study area). <span class="tag as">assumption</span> It was chosen because the team studied it first, not because growth is planned there.</li>
+<li><strong>Infill:</strong> the new homes are shared between the corner's pipes in proportion to pipe length (154 entry points). Each share enters at the pipe's upstream node, the way Sim 2.5 loads existing homes. This uses Sim 2.5's own <code>growth_nodes</code> input, as its Walkerville Terrace corridor runs do.</li>
+<li><strong>Greenfield:</strong> the same homes arrive at one manhole, 4426673, the head of the corner (the longest flow path to node 583). <span class="tag as">assumption</span> Walkerville has no empty land; this tests the method, not a real estate.</li>
+<li><strong>Sizes:</strong> 50, 150 and 300 new homes. <strong>Weather:</strong> Dry, Design wet, Severe (I&amp;I 0, 0.11, 0.40 L/s per 100 m), Sim 2.5's case set.</li>
+<li><strong>Load per new home:</strong> unchanged from Sim 2.5: 2.3 people × 200 L per person per day × peak factor 2.0, so 150 homes add 1.60 L/s.</li>
+<li><strong>Rain only:</strong> each manhole's normal depth in Design wet or Severe minus its depth on a dry day, from Sim 2.6's own baseline runs.</li>
+</ul>
+<h3>Results</h3>
+<div class="tbl"><table>
+<tr><th>Weather</th><th>Shape</th><th class="n">50 homes</th><th class="n">150 homes</th><th class="n">300 homes</th></tr>
+<tr><td rowspan="2">Dry</td><td>Infill</td><td class="n">0 (max 3 mm)</td><td class="n">0 (max 10 mm)</td><td class="n">0 (max 20 mm)</td></tr>
+<tr><td>Greenfield</td><td class="n">0 (max 9 mm)</td><td class="n">0 (max 17 mm)</td><td class="n">1 (max 26 mm)</td></tr>
+<tr><td rowspan="2">Design wet</td><td>Infill</td><td class="n">3 (max 32 mm)</td><td class="n">10 (max 102 mm)</td><td class="n">11 (max 209 mm)</td></tr>
+<tr><td>Greenfield</td><td class="n">0 (max 23 mm)</td><td class="n">9 (max 66 mm)</td><td class="n">10 (max 131 mm)</td></tr>
+<tr><td rowspan="2">Severe</td><td>Infill</td><td class="n">13 (max 51 mm)</td><td class="n">29 (max 152 mm)</td><td class="n">30 (max 300 mm)</td></tr>
+<tr><td>Greenfield</td><td class="n">10 (max 113 mm)</td><td class="n">30 (max 317 mm)</td><td class="n">30 (max 621 mm)</td></tr>
+</table></div>
+<p>Each cell is the number of manholes rising 25 mm or more, with the largest rise anywhere. No run created a new overflow from a lid.</p>
+<ul>
+<li><strong>Wet day:</strong> spread-out infill raised as many or more manholes, and higher, than one estate of the same size (102 vs 66 mm at 150 homes). This agrees with Mikovits et al. (2018).</li>
+<li><strong>Dry day and storm:</strong> the concentrated estate gave the bigger single rise. So the shape of growth matters, and which shape is worse depends on the weather.</li>
+<li><strong>Do Sim 2.5's sensors notice it?</strong> Of the 12 runs where some manhole rises 25 mm or more, the "catch new growth" plan notices 5 with 3 or 6 sensors (the five Design wet runs that show a rise) and 11 with 10 sensors. The storm runs are missed until about 10 sensors, because the sensors chosen for single-spot growth sit outside this corner. <strong>A plan for area growth may need a sensor placed for that area.</strong></li>
+</ul>
+
+<h2>4. Addition 2: risk = severity × likelihood</h2>
+<p><strong>Why:</strong> The industry partner asked whether to monitor the trunk main or the growth location, and Sim 2.5's README lists "watch the choke points" as an open item. Kimbrough (2019) ranks locations by a risk priority number: consequence × how often a pipe runs too full.</p>
+<div class="tbl"><table>
+<tr><th>Part</th><th>Definition</th><th>Status</th></tr>
+<tr><td>Likelihood (1 to 10)</td><td>1 + 9 × the share of the 5 weather cases in which the manhole's peak depth, before any growth, is at least 0.7 of its outgoing pipe's diameter (Kimbrough's 0.7 d/D)</td><td><span class="tag as">assumption</span> Kimbrough used the share of 30 days of readings; we use the share of weather cases</td></tr>
+<tr><td>Severity (1 to 10)</td><td>1 + 9 × the manhole's rank by homes draining through it (more homes behind it, more people affected if it backs up)</td><td><span class="tag as">assumption</span> Kimbrough scored land use from aerial imagery; that is a better next step</td></tr>
+<tr><td>Risk (1 to 100)</td><td>Severity × likelihood</td><td><span class="tag src">Kimbrough 2019</span></td></tr>
+<tr><td>What a sensor watches</td><td>Its own manhole and the nearest manhole one step up and down the pipes</td><td><span class="tag as">assumption</span></td></tr>
+<tr><td>"Both" plan</td><td>Greedy on 50% worst-case growth noticed + 50% share of total risk watched</td><td><span class="tag as">assumption</span></td></tr>
+</table></div>
+<p><strong>Result:</strong> with 3 sensors, the growth plan watches 7% of the total risk score and notices 39% of growth in the worst case. The risk plan watches 14% of the risk and notices 28% of growth. The highest-risk manholes are the trunk mains with over 1,000 homes behind them (for example 4454376 and 4453098). A trunk sensor is about <em>watching a choke point</em>, not noticing a new development, so the two goals pick different places.</p>
+
+<h2>5. Addition 3: each manhole's normal band</h2>
+<p><strong>Why:</strong> Sim 2.5's own first next step is to set the detection threshold from normal-day level records, and Sim 2.5 found the "robust pair" holds only if the threshold is the same everywhere. Rosin et al. (2022) set alarms from each site's own history: limit = normal level + N × its standard deviation, kept separately for dry and wet weather.</p>
+<ul>
+<li><strong>Rule:</strong> a sensor notices growth if the rise is at least max(5 mm, 3 × σ), with N = 3 as in Rosin's dry-weather rules. σ is set separately for each weather case (Rosin's wet/dry split).</li>
+<li><span class="tag as">assumption</span> <strong>σ = 10% of the manhole's normal peak depth.</strong> There are no level records yet, so this is a placeholder. It means busy trunk pipes, which run deep, need a bigger rise to count.</li>
+<li><span class="tag as">not modelled</span> Rosin's weekday/weekend split and slow-trend rules need time series, which the steady SWMM runs do not give.</li>
+</ul>
+<h3>Sensitivity to the 10% guess (worst case, the rule's own best sensors)</h3>
+<div class="tbl"><table>
+<tr><th>Rule</th><th class="n">1 sensor</th><th class="n">3</th><th class="n">6</th><th class="n">10</th></tr>
+<tr><td>Fixed 25 mm (Sim 2.5)</td><td class="n">24%</td><td class="n">39%</td><td class="n">61%</td><td class="n">71%</td></tr>
+<tr><td>Normal band, σ = 3% of depth</td><td class="n">6%</td><td class="n">34%</td><td class="n">42%</td><td class="n">54%</td></tr>
+<tr><td>Normal band, σ = 5%</td><td class="n">3%</td><td class="n">21%</td><td class="n">32%</td><td class="n">42%</td></tr>
+<tr><td>Normal band, σ = 10% (used on the page)</td><td class="n">3%</td><td class="n">15%</td><td class="n">23%</td><td class="n">31%</td></tr>
+<tr><td>Normal band, σ = 20%</td><td class="n">2%</td><td class="n">5%</td><td class="n">13%</td><td class="n">23%</td></tr>
+</table></div>
+<p>The answer depends strongly on how much each manhole's level naturally varies from day to day. That is exactly what the utility's normal-day level records would settle, and it is the single most valuable piece of data to request. When the records arrive, Rosin's recipe (mean and σ by manhole, hour, weekday/weekend and dry/wet) replaces the 10% placeholder.</p>
+
+<h2>6. Addition 4: what a sensor plan costs</h2>
+<p><strong>Why:</strong> The industry partner asked what sensors each location needs, and Sim 2.5 lists cost-weighted float vs level placement (G8) as a next step.</p>
+<ul>
+<li><strong>Float switch</strong> = Sim 2.5's 150 mm alarm rule: it only reports that the water passed 150 mm.</li>
+<li><strong>Level sensor</strong> = the 25 mm rise rule (or the normal band, if chosen).</li>
+<li><strong>Optimiser:</strong> greedy, adding whichever sensor (type and manhole) gives the most extra growth noticed per dollar, at most one sensor per manhole. The objective is average coverage plus a quarter of the worst-case gain. It runs in the browser, so changed prices re-plan at once.</li>
+</ul>
+<div class="box warn"><strong>The prices are placeholders, not quotes.</strong> Only one figure comes from the papers: simple in-sewer switch detectors cost about €200 before data transmission (Hofer et al. 2018). No level-sensor price was found. Replace these with the utility's real prices on the page.</div>
+<div class="tbl"><table>
+<tr><th>Item (AUD)</th><th class="n">Float switch</th><th class="n">Level sensor</th><th>Status</th></tr>
+<tr><td>Buy</td><td class="n">400</td><td class="n">2,500</td><td><span class="tag as">assumption</span></td></tr>
+<tr><td>Install</td><td class="n">500</td><td class="n">800</td><td><span class="tag as">assumption</span></td></tr>
+<tr><td>Per year (battery, telemetry, upkeep)</td><td class="n">150</td><td class="n">400</td><td><span class="tag as">assumption</span></td></tr>
+<tr><td>10-year total</td><td class="n">2,400</td><td class="n">7,300</td><td></td></tr>
+</table></div>
+<p><strong>Result with these prices, $40,000 over 10 years:</strong> the best mix is 5 level sensors and 1 float (6 sensors): 75% of growth noticed on average and 60% in the worst weather. Level sensors only: 5 sensors, 73% and 60%. Floats only stop improving at about 36% average and 3% worst, however much is spent, because the main pipes are already above the float's height on a normal day.</p>
+<p><strong>What this means:</strong> a float switch at a fixed height cannot notice growth where water already runs high. Floats suit the quiet upstream branches; the trunk needs level sensors. Different float heights were not tested.</p>
+<h3>Sensor failures</h3>
+<p>Do et al. (2023) report that 24% of the Stonyfell level sensors failed or needed attention in their first year. Step 3 shows coverage if each sensor works only 76% of the time. For example, the 3-sensor growth plan falls from 60% to 49% on average. <span class="tag as">assumption</span> Failures are independent and apply to every sensor equally.</p>
+
+<h2>7. Everything else carried over from Sim 2.5</h2>
+<p>All of Sim 2.5's assumptions still apply, unchanged: the network data, flow directions, rebuilt manhole depths, roughness by material, loads per home, infiltration levels, outside inflows, ideal pump stations and the 150 mm alarm. They are listed in full on the <a href="../simulation25/index.html">full model's Assumptions tab</a>. Two of them matter most for Sim 2.6:</p>
+<ul>
+<li><strong>Steady peak flow.</strong> Each run is the settled peak of the day, not a full day of changing flow. That is why the normal band uses an assumed σ.</li>
+<li><strong>New homes add sewage only, no extra rain inflow</strong> (Sim 2.5's P03). Marega et al. (2024) found rain inflow is the most influential uncertainty, so this likely understates growth in wet weather.</li>
+</ul>
+
+<h2>8. Files and how to reproduce</h2>
+<div class="tbl"><table>
+<tr><th>File</th><th>What it is</th></tr>
+<tr><td><code>simulation_src/sim26/sim26_scenarios.py</code></td><td>Repeats one published run (check 1), then runs the 21 infill, greenfield and baseline SWMM runs. About 2 minutes on 5 workers.</td></tr>
+<tr><td><code>simulation_src/results/sim26/scenarios.json</code></td><td>Their saved results</td></tr>
+<tr><td><code>simulation_src/sim26/sim26_build.py</code></td><td>Reads Sim 2.5's saved grid and the new runs; runs checks 2 and 3; writes the page data. A few seconds; no SWMM.</td></tr>
+<tr><td><code>simulation26/data/sim26.js</code></td><td>The page data (generated; not edited by hand)</td></tr>
+<tr><td><code>simulation26/index.html</code>, <code>sim26.js</code>, <code>sim26.css</code></td><td>The page. It reuses Sim 2.5's map (<code>growth_3d.js</code>) and data files without changing them.</td></tr>
+</table></div>
+<p>Commands, from the repository root:</p>
+<p><code>~/.venvs/sewer/bin/python simulation_src/sim26/sim26_scenarios.py</code><br>
+<code>~/.venvs/sewer/bin/python simulation_src/sim26/sim26_build.py</code></p>
+<p>Setup note for Apple Silicon Macs: swmm-toolkit 0.17.0 ships two libraries with broken code signatures that macOS refuses to load. Re-sign them once, locally: <code>codesign --force --sign - libomp.dylib libswmm-output.dylib</code> inside the package's <code>swmm/toolkit</code> folder.</p>
+
+<h2>9. Sources</h2>
+<ul>
+<li>Kimbrough, H.R. (2019). <em>Optimal Sensor Placement for Sewer Capacity Risk Management.</em> PhD dissertation, Colorado State University.</li>
+<li>Mikovits, C., Rauch, W. &amp; Kleidorfer, M. (2018). Importance of scenario analysis in urban development for urban water infrastructure planning and management. <em>Computers, Environment and Urban Systems</em> 68, 9-16.</li>
+<li>Rosin, T.R., Kapelan, Z., Keedwell, E. &amp; Romano, M. (2022). Near real-time detection of blockages in the proximity of combined sewer overflows using evolutionary ANNs and statistical process control. <em>J. Hydroinformatics</em> 24(2), 259-273.</li>
+<li>Hofer, T. et al. (2018). A robust and accurate surrogate method for monitoring the frequency and duration of combined sewer overflows. <em>Environmental Monitoring and Assessment</em> 190, 209.</li>
+<li>Do, N.C., Dix, L., Lambert, M.F. &amp; Stephens, M.L. (2023). Proactive detection of wastewater overflows for smart sanitary sewer systems: case study in South Australia. <em>J. Water Resources Planning and Management</em> 149(1).</li>
+<li>Marega, G., Drake, J. &amp; Meyer, D.D. (2024). Climate-resilient sanitary sewers through minimized inflow. <em>J. Water Resources Planning and Management</em> 150(11).</li>
+<li>Löwe, R. et al. (2020). Impacts of urban development on urban water management: limits of predictability. <em>Computers, Environment and Urban Systems</em> 84, 101546.</li>
+</ul>
+</div></body></html>

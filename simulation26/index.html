@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Walkerville sewer sensors: Sim 2.6</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<link rel="stylesheet" href="sim26.css?v=2">
+</head>
+<body>
+<!-- Sim 2.6: the presentation view with four additions (infill and greenfield growth, a risk
+     score, a per-manhole alarm rule, and cost). It reads Sim 2.5's published SWMM results and
+     the new Sim 2.6 runs, and draws them with Sim 2.5's own map; it changes none of them.
+     Every assumption and every change from Sim 2.5 is listed on about.html. -->
+<header>
+  <h1>Walkerville sewer <span>· where to put sensors as the suburb grows · Sim 2.6</span></h1>
+  <nav class="steps" role="tablist">
+    <button role="tab" data-step="1"><b>1</b>Network</button>
+    <button role="tab" data-step="2"><b>2</b>Growth &amp; rain</button>
+    <button role="tab" data-step="3"><b>3</b>Sensors</button>
+    <button role="tab" data-step="4"><b>4</b>Cost</button>
+  </nav>
+  <a class="full" href="about.html">Assumptions &amp; what changed →</a>
+  <a class="full" href="../simulation25/index.html">Full model →</a>
+</header>
+
+<aside id="panel"></aside>
+
+<main>
+  <div id="stage"></div>
+  <div class="key" id="key">
+    <div class="row" data-k="site"><span class="k" style="background:#7dd8ff"></span>Where the new homes connect</div>
+    <div class="row" data-k="tip"><span class="k" style="background:#ff2d55"></span>Water rises 25 mm or more</div>
+    <div class="row" data-k="rise"><span class="k" style="background:#c9a3ff"></span>Water rises 10 to 25 mm</div>
+    <div class="row" data-k="was"><span class="k" style="background:#ffa500"></span>Already full before the change</div>
+    <div class="row" data-k="spill"><span class="k" style="background:#ff3df5"></span>Overflowing from the lid</div>
+    <div class="row" data-k="sensor"><span class="k" style="background:#2ef56b"></span>Proposed sensor</div>
+    <div class="row" data-k="mh"><span class="k" style="background:#8b949e"></span>Manhole</div>
+  </div>
+  <div class="tip" id="tip">Drag to turn · right-drag to move · scroll to zoom</div>
+</main>
+
+<script src="../simulation25/data/catchment.js?v=81"></script>
+<script src="../simulation25/data/growth.js?v=81"></script>
+<script src="data/sim26.js?v=2"></script>
+<script src="../simulation25/growth_3d.js?v=81"></script>
+<script src="sim26.js?v=2"></script>
+<script type="module">
+  Sim26.init();
+</script>
+</body>
+</html>
